@@ -7,6 +7,7 @@ import { generateSitemapXml } from '@/lib/sitemap.xml'
 import { DynamicLayout } from '@/themes/theme'
 import { generateRedirectJson } from '@/lib/redirect'
 import { checkDataFromAlgolia } from '@/lib/plugins/algolia'
+import Link from 'next/link'
 
 /**
  * 首页布局
@@ -14,8 +15,53 @@ import { checkDataFromAlgolia } from '@/lib/plugins/algolia'
  * @returns
  */
 const Index = props => {
-  const theme = siteConfig('THEME', BLOG.THEME, props.NOTION_CONFIG)
-  return <DynamicLayout theme={theme} layoutName='LayoutIndex' {...props} />
+  return (
+    <DynamicLayout theme={siteConfig('THEME', BLOG.THEME, props.NOTION_CONFIG)} layoutName='LayoutIndex' {...props}>
+      <div className="w-full flex flex-col md:flex-row gap-6">
+        
+        <aside className="sidebar w-full md:w-64 p-4 hidden md:block rounded-xl">
+          <h2 className="text-lg text-white mb-3">分类 Categories</h2>
+          <ul>
+            {props.categories?.map(c => (
+              <li key={c.name} className="mb-2">
+                <Link href={`/category/${c.name}`}>
+                  <span className="category-item cursor-pointer">{c.name}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </aside>
+
+        <div className="flex-1">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <img src="/logo.png" className="w-14 h-14 logo-glow rounded-xl" />
+              <h1 className="title-glow">Chisenin Space</h1>
+            </div>
+            <div className="search-container hidden md:block">
+              <input type="text" placeholder="Search..." />
+            </div>
+          </div>
+
+          <div className="card-grid">
+            {[
+              { title: 'Blog', description: '所有文章与更新', link: '/archive' },
+              { title: 'Projects', description: '我的项目', link: '/projects' },
+              { title: 'Tools', description: '工具 / 资源', link: '/tools' },
+              { title: 'About', description: '关于我', link: '/about' }
+            ].map(item => (
+              <Link href={item.link} key={item.title}>
+                <div className="card cursor-pointer">
+                  <h3>{item.title}</h3>
+                  <p>{item.description}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+    </DynamicLayout>
+  )
 }
 
 /**
